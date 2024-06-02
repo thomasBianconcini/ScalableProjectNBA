@@ -2,7 +2,8 @@
 import React, { useEffect } from 'react';
 import './App.css';
 import { useState } from 'react';
-import axios from 'axios';
+import BasicSelect from "./components/basicSelect.tsx";
+import Button from '@mui/material/Button';
 
 interface ISquadre {
   squadra1: string;
@@ -13,7 +14,6 @@ function App() {
   const [squadra1, setSquadra1] = useState("");
   const [squadra2, setSquadra2] = useState("");
   const [value, setValue] = useState<ISquadre | null>(null);
-  const [scoreboard, setScoreboard] = useState(null);
 
   useEffect(() => {
     fetch('http://localhost:5000/api/scoreboard',{method:'GET', redirect: 'follow'})
@@ -25,6 +25,14 @@ function App() {
       console.error('There was a problem with the fetch operation:', error);
     });
   }, []);
+
+  const changeTeam1 = (team: string) => {
+    setSquadra1(team);
+  }
+
+  const changeTeam2 = (team: string) => {
+      setSquadra2(team);
+  }
 
   const handleClick = () => {
     const apiUrl = `http://localhost:5000/api/predict?squadra1=${squadra1}&squadra2=${squadra2}`;
@@ -47,27 +55,15 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <input
-          type="text"
-          value={squadra1}
-          onChange={(e) => setSquadra1(e.target.value)}
-          placeholder="Enter squadra1"
-        />
-        <input
-          type="text"
-          value={squadra2}
-          onChange={(e) => setSquadra2(e.target.value)}
-          placeholder="Enter squadra2"
-        />
-        <button onClick={handleClick}>Click me</button>
-        {value && (
+      <BasicSelect change={changeTeam1}></BasicSelect>
+      <BasicSelect change={changeTeam2}></BasicSelect>
+      <Button variant="outlined" onClick={handleClick}>Get winner</Button>
+      {value && (
           <div>
             <p>Squadra 1: {value.squadra1}</p>
             <p>Squadra 2: {value.squadra2}</p>
           </div>
-        )}
-      </header>
+      )}
     </div>
   );
 }
