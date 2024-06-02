@@ -1,0 +1,20 @@
+# General
+*.log
+*.py[cod]
+*.swp
+.DS_Store
+.idea/
+.venv/
+
+# Python
+backend/.venv/
+backend/__pycache__/
+backend/api/__pycache__/
+backend/instance/
+
+# Node
+frontend/node_modules/
+frontend/build/
+frontend/npm-debug.log
+frontend/package-lock.json
+frontend/yarn.lock
