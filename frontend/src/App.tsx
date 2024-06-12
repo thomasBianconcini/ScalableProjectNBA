@@ -8,17 +8,13 @@ import Button from '@mui/material/Button';
 import {Grid} from "@mui/material";
 import Typography from '@mui/material/Typography';
 import background from './wallpaperone.jpg';
-
-interface ISquadre {
-  squadra1: string;
-  squadra2: string;
-}
-
+import {Audio} from "react-loader-spinner"
 function App() {
   const [squadra1, setSquadra1] = useState("");
   const [squadra2, setSquadra2] = useState("");
-  const [value, setValue] = useState<ISquadre | null>(null);
-
+  const [value, setValue] = useState("");
+  const [showValue, setShow] = useState(false);
+  const [spinner, setSpinner] = useState(false);
   useEffect(() => {
     fetch('http://localhost:5000/api/scoreboard',{method:'GET', redirect: 'follow'})
     .then(response => response.text())
@@ -39,6 +35,7 @@ function App() {
   }
 
   const handleClick = () => {
+    setShow(false)
     const apiUrl = `http://localhost:5000/api/predict?squadra1=${squadra1}&squadra2=${squadra2}`;
     const apiKey = 'taylor';
     fetch(apiUrl, {
@@ -50,7 +47,9 @@ function App() {
     .then(response => response.json())
     .then(data => {
       console.log(data);
-      setValue(data);
+      setValue(data.winner);
+      setShow(true)
+      setSpinner(false);
     })
     .catch(error => {
       console.error('There was a problem with the fetch operation:', error);
@@ -74,14 +73,22 @@ function App() {
         </Grid>
         <Grid item xs={4}></Grid>
         <Grid item xs={8}>
-          <Button variant="outlined" onClick={handleClick}>Get winner</Button>
+        <Button variant="outlined" onClick={() => {
+            setSpinner(true);
+            handleClick();
+        }}>Get winner</Button>
         </Grid>
-        <Grid item xs={4}></Grid>
-        <Grid item xs={8}>
-          {value && (
+        <Grid item xs={4}>
+        </Grid>
+        <Grid item xs={8} alignItems="center">
+          {spinner && (
+            <div style={{ display: 'flex', marginLeft: '3%', justifyContent: 'center', alignItems: 'center' } }>
+              <Audio width="50%" color='rgba(45,49,141,255)'visible></Audio>
+            </div>
+          )}
+          {showValue && (
               <div>
-                <p>Squadra 1: {value.squadra1}</p>
-                <p>Squadra 2: {value.squadra2}</p>
+                <p>Winner: {value}</p>
               </div>
           )}
         </Grid>

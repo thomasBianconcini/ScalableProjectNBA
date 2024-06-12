@@ -3,6 +3,8 @@ from flask_restx import Resource, fields, Namespace
 from nba_api.stats.endpoints import leaguegamefinder
 from datetime import datetime
 
+from api.predict import predict
+
 api = Namespace('api', description='Test API')
 
 api_key = api.model('API Key', {
@@ -40,9 +42,6 @@ class HelloWorld(Resource):
          
          squadra1 = request.args.get('squadra1')
          squadra2 = request.args.get('squadra2')
-         result = {
-            'squadra1': squadra1,
-            'squadra2': squadra2
-        }
-         return jsonify(result)
 
+         return predict(squadra1,squadra2)
+         
