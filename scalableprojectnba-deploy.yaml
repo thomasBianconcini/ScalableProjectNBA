@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scalableprojectnba-frontend-deployment
+spec:
+  replicas: 2  # Numero di repliche per il frontend, adattabile alle tue esigenze
+  selector:
+    matchLabels:
+      app: scalableprojectnba-frontend
+  template:
+    metadata:
+      labels:
+        app: scalableprojectnba-frontend
+    spec:
+      containers:
+      - name: scalableprojectnba-frontend
+        image: containerregistrynba.azurecr.io/scalableprojectnba-frontend
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            memory: "500Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: scalableprojectnba-frontend-service
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 3000
+  selector:
+    app: scalableprojectnba-frontend
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scalableprojectnba-backend-deployment
+spec:
+  replicas: 2  # Numero di repliche per il backend, adattabile alle tue esigenze
+  selector:
+    matchLabels:
+      app: scalableprojectnba-backend
+  template:
+    metadata:
+      labels:
+        app: scalableprojectnba-backend
+    spec:
+      containers:
+      - name: scalableprojectnba-backend
+        image: containerregistrynba.azurecr.io/scalableprojectnba-backend
+        ports:
+        - containerPort: 5000
+        resources:
+          requests:
+            memory: "500Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: scalableprojectnba-backend-service
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 5000
+  selector:
+    app: scalableprojectnba-backend
+
