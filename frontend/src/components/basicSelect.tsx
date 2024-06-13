@@ -5,7 +5,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 
-export default function BasicSelect({change}) {
+export default function BasicSelect({ change }) {
 
     //const [age, setAge] = React.useState('');
 
@@ -29,10 +29,10 @@ export default function BasicSelect({change}) {
             <FormControl fullWidth>
                 <InputLabel id="demo-simple-select-label">Team</InputLabel>
                 <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                label="Team"
-                onChange={handleChange}
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    label="Team"
+                    onChange={handleChange}
                 >
                     {nbaTeams.map((team) => (
                         <MenuItem key={team} value={team}>
@@ -42,5 +42,5 @@ export default function BasicSelect({change}) {
                 </Select>
             </FormControl>
         </Box>
-);
+    );
 }

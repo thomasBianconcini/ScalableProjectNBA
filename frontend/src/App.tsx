@@ -5,10 +5,10 @@ import { useState } from 'react';
 import BasicSelect from "./components/basicSelect.tsx";
 import ButtonAppBar from "./components/appBar.tsx";
 import Button from '@mui/material/Button';
-import {Grid} from "@mui/material";
+import { Grid } from "@mui/material";
 import Typography from '@mui/material/Typography';
 import background from './wallpaperone.jpg';
-import {Circles} from "react-loader-spinner"
+import { Circles } from "react-loader-spinner"
 
 function App() {
   const [squadra1, setSquadra1] = useState("");
@@ -22,7 +22,7 @@ function App() {
   }
 
   const changeTeam2 = (team: string) => {
-      setSquadra2(team);
+    setSquadra2(team);
   }
 
   const handleClick = () => {
@@ -35,20 +35,20 @@ function App() {
         'X-API-KEY': apiKey
       }
     })
-    .then(response => response.json())
-    .then(data => {
-      console.log(data);
-      setValue(data.winner);
-      setShow(true)
-      setSpinner(false);
-    })
-    .catch(error => {
-      console.error('There was a problem with the fetch operation:', error);
-    });
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        setValue(data.winner);
+        setShow(true)
+        setSpinner(false);
+      })
+      .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+      });
   };
 
   return (
-    <div className="App" style={{backgroundImage: `url(${background})`, backgroundSize: 'cover', height:'100vh'}}>
+    <div className="App" style={{ backgroundImage: `url(${background})`, backgroundSize: 'cover', height: '100vh' }}>
       <ButtonAppBar></ButtonAppBar>
       <Grid container spacing={2} paddingTop={10} paddingLeft={10} paddingRight={10}>
         <Grid item xs={4}></Grid>
@@ -64,23 +64,23 @@ function App() {
         </Grid>
         <Grid item xs={4}></Grid>
         <Grid item xs={8}>
-        <Button variant="outlined" onClick={() => {
+          <Button variant="outlined" onClick={() => {
             setSpinner(true);
             handleClick();
-        }}>Get winner</Button>
+          }}>Get winner</Button>
         </Grid>
         <Grid item xs={4}>
         </Grid>
         <Grid item xs={8} alignItems="center">
           {spinner && (
-            <div style={{ display: 'flex', marginLeft: '3%', justifyContent: 'center', alignItems: 'center' } }>
-              <Circles width="50%" color='rgba(45,49,141,255)'visible></Circles>
+            <div style={{ display: 'flex', marginLeft: '3%', justifyContent: 'center', alignItems: 'center' }}>
+              <Circles width="50%" color='rgba(45,49,141,255)' visible></Circles>
             </div>
           )}
           {showValue && (
-              <div>
-                <p>Winner: {value}</p>
-              </div>
+            <div>
+              <p>Winner: {value}</p>
+            </div>
           )}
         </Grid>
       </Grid>
