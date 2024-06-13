@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: scalableprojectnba-frontend-deployment
 spec:
-  replicas: 2  # Numero di repliche per il frontend, adattabile alle tue esigenze
+  replicas: 2
   selector:
     matchLabels:
       app: scalableprojectnba-frontend
@@ -42,7 +42,7 @@ kind: Deployment
 metadata:
   name: scalableprojectnba-backend-deployment
 spec:
-  replicas: 2  # Numero di repliche per il backend, adattabile alle tue esigenze
+  replicas: 2
   selector:
     matchLabels:
       app: scalableprojectnba-backend

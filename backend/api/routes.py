@@ -19,17 +19,6 @@ allowed_api_keys = ['taylor']
 def check_api_key(key):
     return key in allowed_api_keys
 
-@api.route('/scoreboard')
-class ScoreBoard(Resource):
-    def get(self):
-        team_id = 1610612747  # ID dei Los Angeles Lakers
-        game_finder = leaguegamefinder.LeagueGameFinder(team_id_nullable=team_id)
-        games = game_finder.get_data_frames()[0]
-
-        # Visualizza lo schedule
-        print(games)
-        return jsonify(games)
-
 @api.route("/predict")
 class HelloWorld(Resource):
     @api.doc(security='apikey')

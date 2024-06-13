@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import './App.css';
 import { useState } from 'react';
 import BasicSelect from "./components/basicSelect.tsx";
@@ -8,23 +8,14 @@ import Button from '@mui/material/Button';
 import {Grid} from "@mui/material";
 import Typography from '@mui/material/Typography';
 import background from './wallpaperone.jpg';
-import {Audio} from "react-loader-spinner"
+import {Circles} from "react-loader-spinner"
+
 function App() {
   const [squadra1, setSquadra1] = useState("");
   const [squadra2, setSquadra2] = useState("");
   const [value, setValue] = useState("");
   const [showValue, setShow] = useState(false);
   const [spinner, setSpinner] = useState(false);
-  useEffect(() => {
-    fetch('http://localhost:5000/api/scoreboard',{method:'GET', redirect: 'follow'})
-    .then(response => response.text())
-    .then(data => {
-      console.log(data);
-    })
-    .catch(error => {
-      console.error('There was a problem with the fetch operation:', error);
-    });
-  }, []);
 
   const changeTeam1 = (team: string) => {
     setSquadra1(team);
@@ -83,7 +74,7 @@ function App() {
         <Grid item xs={8} alignItems="center">
           {spinner && (
             <div style={{ display: 'flex', marginLeft: '3%', justifyContent: 'center', alignItems: 'center' } }>
-              <Audio width="50%" color='rgba(45,49,141,255)'visible></Audio>
+              <Circles width="50%" color='rgba(45,49,141,255)'visible></Circles>
             </div>
           )}
           {showValue && (
