@@ -1,73 +1,102 @@
-
 from flask import jsonify
-from nba_api.stats.static import teams
-from nba_api.stats.endpoints import teamplayerdashboard, playercareerstats
-import json
+from pymongo import MongoClient
 
 import pandas as pd
-import numpy as np
 from tensorflow.keras.models import load_model
 from pickle import load
 
 fileName = "history_dataset.csv"
-modelName = "./api/modelNBATrained_50.h5"
+modelName = "./model/modelNBATrained_50.h5"
 random_state = 42
 
-def predict(home,away):
-    current_season = '2023-24'
-    selected_columns = ['GP', 'GS', 'MIN', 'FG_PCT', 'FG3_PCT', 'FT_PCT', 'OREB', 'DREB', 'REB', 'AST', 'STL', 'BLK', 'TOV', 'PF', 'PTS']
-    num_stats = len(selected_columns)
+TEAM_IDS = {
+    "Atlanta Hawks": 1610612737,
+    "Boston Celtics": 1610612738,
+    "Brooklyn Nets": 1610612751,
+    "Charlotte Hornets": 1610612766,
+    "Chicago Bulls": 1610612741,
+    "Cleveland Cavaliers": 1610612739,
+    "Dallas Mavericks": 1610612742,
+    "Denver Nuggets": 1610612743,
+    "Detroit Pistons": 1610612765,
+    "Golden State Warriors": 1610612744,
+    "Houston Rockets": 1610612745,
+    "Indiana Pacers": 1610612754,
+    "Los Angeles Clippers": 1610612746,
+    "Los Angeles Lakers": 1610612747,
+    "Memphis Grizzlies": 1610612763,
+    "Miami Heat": 1610612748,
+    "Milwaukee Bucks": 1610612749,
+    "Minnesota Timberwolves": 1610612750,
+    "New Orleans Pelicans": 1610612740,
+    "New York Knicks": 1610612752,
+    "Oklahoma City Thunder": 1610612760,
+    "Orlando Magic": 1610612753,
+    "Philadelphia 76ers": 1610612755,
+    "Phoenix Suns": 1610612756,
+    "Portland Trail Blazers": 1610612757,
+    "Sacramento Kings": 1610612758,
+    "San Antonio Spurs": 1610612759,
+    "Toronto Raptors": 1610612761,
+    "Utah Jazz": 1610612762,
+    "Washington Wizards": 1641062764
+}
 
-    home_team = home
-    away_team = away
-    teams_query= [home_team, away_team]
-    season = current_season
 
-    array_1 = np.array([0.0] * num_stats)
-    array_2 = np.array([0.0] * num_stats)
-    teams_stats = [array_1, array_2]
+def __get_data_from_db(team_id):
+    connection_string = ("mongodb+srv://taylor:Vignolabrucia1@cosmosdbnbatest.mongocluster.cosmos.azure.com/?tls=true"
+                         "&authMechanism=SCRAM-SHA-256&retrywrites=false&maxIdleTimeMS=120000")
+    client = MongoClient(connection_string)
 
-    for idx, team in enumerate(teams_query):
-        t1 = teams.find_teams_by_full_name(team)
-        team_id = t1[0]['id']
-        print("TEAM ID",team_id)
+    # Nome del nuovo database e della collezione
+    db_name = "stats"
+    collection_name = "teams_players"
 
-        t = teamplayerdashboard.TeamPlayerDashboard(team_id=team_id, season=season)
-        data_player = json.loads(t.get_json())['resultSets']
-        players_data = next(item for item in data_player if item['name'] == 'PlayersSeasonTotals')['rowSet']
-        player_ids = [player[1] for player in players_data]
-        print(f"PLAYER IDS:{player_ids}\n")
+    # Creazione del riferimento al database e alla collezione
+    db = client[db_name]
+    collection = db[collection_name]
 
-        for player_id in player_ids:
-            print(f"PLAYER ID:{player_id}\n")
-            career = playercareerstats.PlayerCareerStats(player_id=player_id)
-            df_single_player_carrer = career.get_data_frames()[0]
-            last_row_stats = df_single_player_carrer[selected_columns].iloc[-1].tolist()
-            #print(f"{last_row_stats}")
-            teams_stats[idx] += np.array(last_row_stats)
-    print("end")
+    data = collection.find({"TEAM_ID": team_id})
+
+    res = pd.DataFrame(list(data))
+    client.close()
+
+    return res
+
+
+def predict(home, away):
+    selected_columns = ['GP', 'GS', 'MIN', 'FG_PCT', 'FG3_PCT', 'FT_PCT', 'OREB', 'DREB', 'REB', 'AST', 'STL', 'BLK',
+                        'TOV', 'PF', 'PTS']
+
+    # Creazione del DataFrame
+    home_team_players = __get_data_from_db(TEAM_IDS[home])
+    away_team_players = __get_data_from_db(TEAM_IDS[away])
+
+    home_team_players = home_team_players.drop(columns=["TEAM_ID", "PLAYER_ID"])
+    away_team_players = away_team_players.drop(columns=["TEAM_ID", "PLAYER_ID"])
+
+    home_team_stats = home_team_players[selected_columns].sum().to_frame().T
+    away_team_stats = away_team_players[selected_columns].sum().to_frame().T
+
     pred_df = pd.DataFrame()
-    # Aggiungere le statistiche al DataFrame
+
     for j, stat in enumerate(selected_columns):
-        pred_df.loc[0, f'Home_Stat_{stat}'] = teams_stats[0][j]
-        pred_df.loc[0, f'Away_Stat_{stat}'] = teams_stats[1][j]
-    with open('./api/standardScaler_ready.pkl','rb') as f:
+        pred_df.loc[0, f'Home_Stat_{stat}'] = home_team_stats.iloc[0][j]
+        pred_df.loc[0, f'Away_Stat_{stat}'] = away_team_stats.iloc[0][j]
+
+    print(pred_df)
+        
+    with open('./model/standardScaler_ready.pkl', 'rb') as f:
         scaler = load(f)
-    
+
     X_std = scaler.transform(pred_df)
     model = load_model(modelName)
     res_tensor = model(X_std)
     res_int = round(res_tensor.numpy().item())
-    res_int
-    if res_int == 1:
-        print(f"Ha vinto la squadra: {teams_query[0]}")
-        result = {
-            'winner': teams_query[0],
-        }
-    else:
-        print(f"Ha vinto la squadra: {teams_query[1]}")
-        result = {
-            'winner': teams_query[1],
-        }
-    return jsonify(result)
 
+    if res_int == 1:
+        result = {'winner': home}
+    else:
+        result = {'winner': away}
+
+    return jsonify(result)
