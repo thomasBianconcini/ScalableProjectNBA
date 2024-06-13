@@ -27,7 +27,8 @@ function App() {
 
   const handleClick = () => {
     setShow(false)
-    const apiUrl = `http://localhost:5000/api/predict?squadra1=${squadra1}&squadra2=${squadra2}`;
+    const backendIp="10.0.249.49"
+    const apiUrl = 'http://'+backendIp+'5000/api/predict?squadra1=${squadra1}&squadra2=${squadra2}';
     const apiKey = 'taylor';
     fetch(apiUrl, {
       method: 'GET',
