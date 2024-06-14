@@ -27,14 +27,17 @@ function App() {
 
   const handleClick = () => {
     setShow(false)
-    const backendIp="scalableprojectnba-backend-service:80"
+    const backendIp="172.213.194.23"
     const apiUrl = `https://${backendIp}/api/predict?squadra1=${squadra1}&squadra2=${squadra2}`;
     const apiKey = 'taylor';
     fetch(apiUrl, {
       method: 'GET',
       headers: {
-        'X-API-KEY': apiKey
-      }
+        'X-API-KEY': apiKey,
+        'Access-Control-Allow-Origin': '*'
+      },
+      mode:'cors'
+      
     })
       .then(response => response.json())
       .then(data => {
