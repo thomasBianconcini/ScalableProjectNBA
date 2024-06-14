@@ -15,7 +15,7 @@ RUN pip install -r requirements.txt
 COPY . .
 
 # Esponi la porta su cui l'app Flask sarà in ascolto
-EXPOSE 5000
+EXPOSE 443
 
 # Comando per eseguire l'app Flask
 CMD ["python", "app.py"]

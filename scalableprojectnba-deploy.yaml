@@ -16,7 +16,7 @@ spec:
       - name: scalableprojectnba-frontend
         image: containerregistrynba.azurecr.io/scalableprojectnba-frontend
         ports:
-        - containerPort: 3000
+        - containerPort: 443
         resources:
           requests:
             memory: "500Mi"
@@ -33,7 +33,7 @@ spec:
   type: LoadBalancer
   ports:
   - port: 80
-    targetPort: 3000
+    targetPort: 443
   selector:
     app: scalableprojectnba-frontend
 ---
@@ -55,7 +55,7 @@ spec:
       - name: scalableprojectnba-backend
         image: containerregistrynba.azurecr.io/scalableprojectnba-backend
         ports:
-        - containerPort: 5000
+        - containerPort: 443
         resources:
           requests:
             memory: "500Mi"
@@ -72,7 +72,7 @@ spec:
   type: LoadBalancer
   ports:
   - port: 80
-    targetPort: 5000
+    targetPort: 443
   selector:
     app: scalableprojectnba-backend
 

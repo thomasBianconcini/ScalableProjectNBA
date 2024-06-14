@@ -21,7 +21,7 @@ RUN npm run build
 RUN npm install -g serve
 
 # Esponi la porta su cui l'app sarà servita
-EXPOSE 3000
+EXPOSE 443
 
 # Comando per eseguire l'app React
-CMD ["serve", "-s", "build", "-l", "3000"]
+CMD ["serve", "-s", "build",  "-l", "443"]

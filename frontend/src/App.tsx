@@ -27,8 +27,8 @@ function App() {
 
   const handleClick = () => {
     setShow(false)
-    const backendIp="scalableprojectnba-backend-service:80"
-    const apiUrl = `http://${backendIp}/api/predict?squadra1=${squadra1}&squadra2=${squadra2}`;
+    const backendIp="projectscalable-backend-service:80"
+    const apiUrl = `https://${backendIp}/api/predict?squadra1=${squadra1}&squadra2=${squadra2}`;
     const apiKey = 'taylor';
     fetch(apiUrl, {
       method: 'GET',
